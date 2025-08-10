@@ -8,25 +8,15 @@ if (!MONGODB_URI) {
     );
 }
 
-// Type declaration for the global mongoose cache
-interface MongooseCache {
-    conn: typeof mongoose | null;
-    promise: Promise<typeof mongoose> | null;
-}
-
-declare global {
-    var mongoose: MongooseCache | undefined;
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections growing exponentially
  * during API Route usage.
  */
-let cached: MongooseCache = global.mongoose || { conn: null, promise: null };
+let cached = global.mongoose;
 
-if (!global.mongoose) {
-    global.mongoose = cached;
+if (!cached) {
+    cached = global.mongoose = { conn: null, promise: null };
 }
 
 async function connectToDatabase() {
