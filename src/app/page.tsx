@@ -36,7 +36,7 @@ export default function Home() {
                             Don't have an account?{" "}
                             <Link
                                 href="/signup"
-                                className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                                className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
                             >
                                 Create new account
                             </Link>
