@@ -25,7 +25,7 @@ export default function Home() {
                     <div className="flex flex-col items-center gap-6">
                         <Link href="/login" className="block w-full">
                             <Button
-                                className="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300"
+                                className="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 cursor-pointer"
                                 size="lg"
                             >
                                 Login

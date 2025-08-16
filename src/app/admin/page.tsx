@@ -32,7 +32,7 @@ export default function AdminPage() {
 
                         <div className="flex flex-col gap-4">
                             <Link href="/" className="block w-full">
-                                <Button className="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300">
+                                <Button className="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 cursor-pointer">
                                     Back to Home
                                 </Button>
                             </Link>
