@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SignupPage() {
     const [name, setName] = useState("");
@@ -19,24 +21,66 @@ export default function SignupPage() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const { signup, user } = useAuth();
+    const router = useRouter();
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (user) {
+            router.push("/");
+        }
+    }, [user, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setError("");
 
-        // Basic password confirmation check
+        // Client-side validation
         if (password !== confirmPassword) {
-            alert("Passwords do not match!");
+            setError("Passwords do not match!");
             setIsLoading(false);
             return;
         }
 
-        // TODO: We'll implement the actual signup logic later
-        console.log("Signup attempt:", { name, email, password });
-        alert("Signup functionality will be implemented in later steps!");
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters long!");
+            setIsLoading(false);
+            return;
+        }
 
-        setIsLoading(false);
+        try {
+            const result = await signup(name.trim(), email.trim(), password);
+
+            if (result.success) {
+                // AuthContext will handle the redirect via useEffect
+                console.log("Signup successful!");
+            } else {
+                setError(result.error || "Signup failed");
+            }
+        } catch (error) {
+            setError("An unexpected error occurred");
+            console.error("Signup error:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
+
+    // Don't render signup form if user is already authenticated
+    if (user) {
+        return (
+            <main className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center p-4">
+                <Card className="w-full max-w-md shadow-2xl rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg">
+                    <CardContent className="flex items-center justify-center p-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
+                        <span className="ml-2 text-white">Redirecting...</span>
+                    </CardContent>
+                </Card>
+            </main>
+        );
+    }
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center p-4">
@@ -51,6 +95,11 @@ export default function SignupPage() {
                 </CardHeader>
                 <CardContent className="px-6 pb-8">
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 text-red-300 px-4 py-3 rounded-lg backdrop-blur-sm">
+                                {error}
+                            </div>
+                        )}
                         <div className="space-y-2">
                             <Label
                                 htmlFor="name"
@@ -65,6 +114,9 @@ export default function SignupPage() {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
+                                disabled={isLoading}
+                                minLength={2}
+                                maxLength={50}
                                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent backdrop-blur-sm"
                             />
                         </div>
@@ -82,6 +134,7 @@ export default function SignupPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
+                                disabled={isLoading}
                                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent backdrop-blur-sm"
                             />
                         </div>
@@ -99,9 +152,13 @@ export default function SignupPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
+                                disabled={isLoading}
                                 minLength={6}
                                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent backdrop-blur-sm"
                             />
+                            <p className="text-xs text-gray-500">
+                                Must be at least 6 characters long
+                            </p>
                         </div>
                         <div className="space-y-2">
                             <Label
@@ -119,6 +176,7 @@ export default function SignupPage() {
                                     setConfirmPassword(e.target.value)
                                 }
                                 required
+                                disabled={isLoading}
                                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent backdrop-blur-sm"
                             />
                         </div>
